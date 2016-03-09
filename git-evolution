@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+
+function _commits_by_file () {
+    git whatchanged --format=oneline | grep -iE "\sM\s|\sA\s|\sD\s" | cut -d " " -f 5 | cut -d$'\t' -f 2 | sort | uniq -c | sort -r
+}
+
+case $1 in
+    "by-file")
+        _commits_by_file
+        ;;
+esac
