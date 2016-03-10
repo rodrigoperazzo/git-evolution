@@ -24,9 +24,12 @@ cmd_stats() {
 }
 
 commits_by_file() {
+    # Possible status letters
+    local status_letters="A|C|D|M|R|T|U|X"
+
     echo 'Commits by file'
     echo
-    git whatchanged --format=oneline | grep -iE "\sM\s|\sA\s|\sD\s" | cut -d " " -f 5 | cut -d$'\t' -f 2 | sort | uniq -c | sort -r
+    git log --format=oneline --name-status | grep -E "[$status_letters]\s" | cut -d$'\t' -f 2 | sort | uniq -c | sort -r
     echo
 }
 
