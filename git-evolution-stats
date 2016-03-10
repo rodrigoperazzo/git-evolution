@@ -7,8 +7,10 @@ usage() {
 
 cmd_stats() {
     if [ "$#" -lt 1 ]; then
+        echo
         commits_by_file
         lines_by_file
+        commits_by_author
         exit 0
     elif [ "$#" -eq 1 ]; then
         case $1 in
@@ -21,16 +23,23 @@ cmd_stats() {
     usage; exit 1
 }
 
-commits_by_file () {
+commits_by_file() {
     echo 'Commits by file'
     echo
     git whatchanged --format=oneline | grep -iE "\sM\s|\sA\s|\sD\s" | cut -d " " -f 5 | cut -d$'\t' -f 2 | sort | uniq -c | sort -r
     echo
 }
 
-lines_by_file () {
+lines_by_file() {
     echo 'Lines added/removed by file'
     echo
     git log --numstat --pretty="" | awk '{A[$3]+=$1;R[$3]+=$2} END { for(x in A) print "   "A[x],"\t"R[x],"\t"x }' | sort -r -n -t$'\t' -k 1,2
+    echo
+}
+
+commits_by_author() {
+    echo 'Commits by author'
+    echo
+    git log --pretty="%an" | sort | uniq -c
     echo
 }
