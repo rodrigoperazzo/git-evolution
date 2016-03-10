@@ -1,22 +1,45 @@
 #!/usr/bin/env bash
 
-_commits_by_file () {
-    echo 'Commits by file'
+usage() {
+    echo "usage: git evolution <subcommand>"
     echo
-    git whatchanged --format=oneline | grep -iE "\sM\s|\sA\s|\sD\s" | cut -d " " -f 5 | cut -d$'\t' -f 2 | sort | uniq -c | sort -r
+    echo "Available subcommands are:"
+    echo -e "stats \tPrint out statistics about a git repository"
+}
+
+version() {
+    echo "evolution git plugin v0.1.0"
     echo
 }
 
-_lines_by_file () {
-    echo 'Lines added/removed by file'
-    echo
-    git log --numstat --pretty="" | awk '{A[$3]+=$1;R[$3]+=$2} END { for(x in A) print "   "A[x],"\t"R[x],"\t"x }' | sort -r -n -t$'\t' -k 1,2
-    echo
+
+main() {
+    if [ "$#" -lt 1 ]; then
+        usage; exit 1
+    fi
+
+    local subcommand="$1"; shift
+
+    case $subcommand in
+        "-h"|"--help")
+            usage; exit 0
+            ;;
+        "-v"|"--version")
+            version; exit 0
+            ;;
+    esac
+
+    local workingdir=$(dirname "$(echo "$0" | sed -e 's,\\,/,g')")
+    if [ ! -e "$workingdir/git-evolution-$subcommand" ]; then
+        usage; exit 1
+    fi
+
+    source "$workingdir/git-evolution-$subcommand"
+    if [ ! -n $(type -t "cmd_$subcommand") ] || [ $(type -t "cmd_$subcommand") != function ]; then
+        usage; exit 1
+    fi
+
+    cmd_$subcommand "$@"
 }
 
-case $1 in
-    "stats")
-        _commits_by_file
-        _lines_by_file
-        ;;
-esac
+main "$@"
