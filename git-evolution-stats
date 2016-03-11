@@ -29,20 +29,24 @@ commits_by_file() {
 
     echo 'Commits by file'
     echo
-    git log --format=oneline --name-status | grep -E "[$status_letters]\s" | cut -d$'\t' -f 2 | sort | uniq -c | sort -r
+    # TODO: -- <path> at then end of git log command to filter by folder
+    git log --all --format=oneline --name-status | grep -E "^[$status_letters]\s" | cut -d$'\t' -f 2 | sort | uniq -c | sort -rn
     echo
 }
 
 lines_by_file() {
     echo 'Lines added/removed by file'
     echo
-    git log --numstat --pretty="" | awk '{A[$3]+=$1;R[$3]+=$2} END { for(x in A) print "   "A[x],"\t"R[x],"\t"x }' | sort -r -n -t$'\t' -k 1,2
+    # TODO: -- <path> at the end of git log command to filter by folder
+    # TODO: how to exclude from changes the inital number of lines?
+    git log --all --numstat --pretty="%" | awk '/^[0-9]/ {A[$3]+=$1;R[$3]+=$2} END { for(x in A) print "   "A[x],"\t"R[x],"\t"x }' | sort -r -n -t$'\t' -k 1,2
     echo
 }
 
 commits_by_author() {
     echo 'Commits by author'
     echo
-    git log --pretty="%an" | sort | uniq -c
+    # TODO: -- <path> at the end of git log command to filter by folder
+    git log --all --pretty="%ae" | sort | uniq -c | sort -rn
     echo
 }
