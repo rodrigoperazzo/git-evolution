@@ -1,6 +1,13 @@
 # git-evolution
 Plugin to analize how your code is evolving over time.
 
+## Things I would like to answer with it
+
+- Who is more familiar with a certain feature?
+- What type of changes has the project been through? Are they what we expected?
+- How many side effects were introduced and why?
+- And any sort of "magic" like these...
+
 ## Installation
 
 ### 1. Clone this repo:
